@@ -94,7 +94,7 @@ class Program:
         for i in range(len(order.orderlineitems)):
             summary += '\nOrder Line Item ' + str(i+1) + ': '
             summary += f'\n\tPart Number: {order.orderlineitems[i].part_number}'
-            summary += f'\n\tUnit Cost: ${order.orderlineitems[i].unit_cost:.2f}'
+            summary += f'\n\tUnit Cost: ${order.orderlineitems[i].unit_cost:,.2f}'
             summary += f'\n\tItem Quantity: {order.orderlineitems[i].quantity_num}\n'
 
             subtotal += (order.orderlineitems[i].quantity_num * order.orderlineitems[i].unit_cost)
