@@ -100,7 +100,7 @@ class Program:
         total = round(subtotal*1.075, 2)
         summary += f'\nSub-total: ${subtotal:,.2f}'
         summary += f'\nTax (7.5%): ${tax:,.2f}'
-        summary += f'\n\nTotal: ${total:,}'
+        summary += f'\n\nTotal: ${total:,.2f}'
         summary += '\n\n*************************************'
 
         return (summary)
