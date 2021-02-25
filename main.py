@@ -32,12 +32,15 @@ class Program:
     
     def get_order_info(self):
 
-        orderNumber, itemDescription = '', ''
+        orderNumber, itemDescription = 0, ''
 
         print('\nEnter order information:')
 
-        while not orderNumber.isnumeric():
-            orderNumber = input('Enter order number: ')
+        while orderNumber <= 0:
+            try:
+                orderNumber = int(input('Enter order number: '))
+            except ValueError:
+                pass
         
         while itemDescription == '':
             itemDescription = input('Enter order description: ')
@@ -53,13 +56,14 @@ class Program:
                 num_of_OLIs = int(input("How many Order Line Items (minimum 1)?: "))
             except ValueError:
                 pass
+        print()
 
         for i in range(1, num_of_OLIs+1):
             partNumber, unitCost, quantity = 0, 0, 0
 
             while partNumber < 1:
                 try:
-                    partNumber = int(input(f"\n[Order Line Item {i}] Enter part number: "))
+                    partNumber = int(input(f"[Order Line Item {i}] Enter part number: "))
                 except ValueError:
                     pass
 
