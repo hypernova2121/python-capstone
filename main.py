@@ -10,75 +10,101 @@ class Program:
         print('Welcome to the Python order processor!')
         customer = self.get_customer_info()
         order = self.get_order_info()
-        summary = order.order_summary(customer)
+        summary = self.order_summary(customer, order)
         print (summary)
          
     def get_customer_info(self):
+
+        firstName, lastName, emailAddress = '', '', ''
+        
         print('\nEnter customer information:')
 
-        firstName = input('Enter first name: ')
         while not firstName.isalpha():
-            firstName = input('*ERROR* Enter valid first name: ')
-
-        lastName = input('Enter last name: ')
+            firstName = input('Enter first name: ').title()
+        
         while not lastName.isalpha():
-            lastName = input('*ERROR* Enter valid last name: ')
+            lastName = input('Enter last name: ').title()
 
-        emailAddress = input('Enter email address: ')
-        while '@' not in emailAddress: #very simple email validation
-            emailAddress = input('*ERROR* Enter valid email address: ')
+        while '@' not in emailAddress:
+            emailAddress = input('Enter email address: ')
+
         return Customer(firstName, lastName, emailAddress)
-
+    
     def get_order_info(self):
-        print('\nEnter order information:')
-        orderNumber = input('Enter the order number: ')
-        while not orderNumber.isnumeric():
-            orderNumber = input('*ERROR* Enter valid order number: ')
-        itemDescription = input('Enter the item description: ')
-        while itemDescription == '':
-            itemDescription = input('*ERROR* Enter the item description: ')
 
-        OLIs = []
-        OLIcounter = 0
-        while OLIcounter < 1:
+        orderNumber, itemDescription = '', ''
+
+        print('\nEnter order information:')
+
+        while not orderNumber.isnumeric():
+            orderNumber = input('Enter order number: ')
+        
+        while itemDescription == '':
+            itemDescription = input('Enter order description: ')
+
+        OLIs = self.get_orderlineitem_info()
+        return Order(orderNumber, itemDescription, OLIs)
+
+    def get_orderlineitem_info(self):
+        OLI_list = []
+        num_of_OLIs = 0
+        while num_of_OLIs < 1:
             try:
-                OLIcounter = int(input("How many Order Line Items?: "))
+                num_of_OLIs = int(input("How many Order Line Items (minimum 1)?: "))
             except ValueError:
                 pass
-            if OLIcounter < 1:
-                print("*ERROR* Must have at least one Order Line Item!")
 
-        for i in range(OLIcounter):
-            partNumber = 0
+        for i in range(1, num_of_OLIs+1):
+            partNumber, unitCost, quantity = 0, 0, 0
+
             while partNumber < 1:
                 try:
-                    partNumber = int(input("What is the part number?: "))
+                    partNumber = int(input(f"\n[Order Line Item {i}] Enter part number: "))
                 except ValueError:
                     pass
-                if partNumber < 1:
-                    print("*ERROR* Enter valid part number!")
 
-            unitCost = 0
-            while unitCost < 1:
+            while unitCost <= 0:
                 try:
-                    unitCost = float(input("What is the unit cost?: "))
+                    unitCost = float(input(f"[Order Line Item {i}] Enter unit cost: "))
                 except ValueError:
                     pass
-                if unitCost <= 0:
-                    print("*ERROR* Enter valid unit cost!")
 
-            quantity = 0
             while quantity < 1:
                 try:
-                    quantity = int(input("What is the quantity?: "))
+                    quantity = int(input(f"[Order Line Item {i}] Enter quantity: "))
                 except ValueError:
                     pass
-                if quantity < 1:
-                    print("*ERROR* Enter valid quantity!")
 
-            OLIs.append(OrderLineItem(partNumber, unitCost, quantity))
-        return Order(orderNumber, itemDescription, OLIs)
-    
+            OLI_list.append(OrderLineItem(partNumber, unitCost, quantity))
+
+        return OLI_list
+
+    def order_summary(self, customer, order):
+        subtotal, total = 0, 0
+
+        summary = '\n\n*************************************'
+        summary += f'\n\nInvoice for Order Number {order.order_number}'
+        summary += f'\n{order.description}\n'
+        summary += f'\nCustomer Name: {customer.first_name} {customer.last_name}  ({customer.email_address})\n'
+
+        for i in range(len(order.orderlineitems)):
+            summary += '\nOrder Line Item ' + str(i+1) + ': '
+            summary += f'\n\tPart Number: {order.orderlineitems[i].part_number}'
+            summary += f'\n\tUnit Cost: ${order.orderlineitems[i].unit_cost:.2f}'
+            summary += f'\n\tItem Quantity: {order.orderlineitems[i].quantity_num}\n'
+
+            subtotal += (order.orderlineitems[i].quantity_num * order.orderlineitems[i].unit_cost)
+
+        #subtotal = round(subtotal, 2)
+        tax = subtotal * 0.075
+        total = round(subtotal*1.075, 2)
+        summary += f'\nSub-total: ${subtotal:,.2f}'
+        summary += f'\nTax (7.5%): ${tax:,.2f}'
+        summary += f'\n\nTotal: ${total:,}'
+        summary += '\n\n*************************************'
+
+        return (summary)
+        
 
 if __name__ == '__main__':
     program = Program()
